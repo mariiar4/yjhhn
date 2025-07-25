@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Enlaces Seguros</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta name="description" content="Generador de enlaces seguros para compartir contenido">
+    <meta name="theme-color" content="#6a5acd">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ejemplo.com/">
+    <meta property="og:title" content="Generador de Enlaces Seguros">
+    <meta property="og:description" content="Herramienta para crear enlaces seguros para compartir contenido">
+    <meta property="og:image" content="https://ejemplo.com/preview.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ejemplo.com/">
+    <meta property="twitter:title" content="Generador de Enlaces Seguros">
+    <meta property="twitter:description" content="Herramienta para crear enlaces seguros para compartir contenido">
+    <meta property="twitter:image" content="https://ejemplo.com/preview.jpg">
+
+    <style>
+        :root {
+            --primary-color: #6a5acd;
+            --secondary-color: #ff6b6b;
+            --accent-color: #4ecdc4;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --success-color: #20c997;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #6a5acd, #4ecdc4, #ff6b6b, #f8f9fa);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 550px;
+            backdrop-filter: blur(10px);
+            margin: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+            box-shadow: var(--shadow);
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(106, 90, 205, 0.3);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--light-color);
+            border-radius: 10px;
+            border: 2px solid #e1e1e1;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-link-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .result-link {
+            flex: 1;
+            background: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #e1e1e1;
+            word-break: break-all;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            background: #5649b3;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #856404;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #721c24;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            display: none;
+        }
+
+        .alert-success {
+            background-color: rgba(32, 201, 151, 0.1);
+            color: #155724;
+            border: 1px solid rgba(32, 201, 151, 0.2);
+            display: none;
+        }
+
+        .features {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-3px);
+        }
+
+        .feature i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature h3 {
+            font-size: 1rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.8rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            input, button {
+                padding: 0.9rem;
+            }
+
+            .result-link-container {
+                flex-direction: column;
+            }
+
+            .copy-btn {
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-link"></i> Generador de Enlaces Seguros</h1>
+        
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Importante:</strong> No publiques el mismo enlace múltiples veces para evitar bloqueos.
+            </div>
+        </div>
+        
+        <div class="alert alert-danger" id="errorAlert">
+            <i class="fas fa-times-circle"></i>
+            <div id="errorMessage"></div>
+        </div>
+        
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            <div>¡Enlace generado con éxito! Copia el enlace a continuación.</div>
+        </div>
+        
+        <form id="linkForm">
+            <div class="form-group">
+                <label for="videoUrl"><i class="fas fa-video"></i> Enlace del Video:</label>
+                <input type="url" id="videoUrl" name="video_url" placeholder="https://ejemplo.com/video.mp4" required>
+                <div class="tooltip" style="position: absolute; right: 10px; top: 45px;">
+                    <i class="fas fa-info-circle" style="color: #6a5acd;"></i>
+                    <span class="tooltiptext">Ingresa la URL del video que deseas compartir</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="redirectUrl"><i class="fas fa-external-link-alt"></i> Enlace de Redirección:</label>
+                <input type="url" id="redirectUrl" name="redirect_url" placeholder="https://tu-sitio.com" required>
+                <div class="tooltip" style="position: absolute; right: 10px; top: 45px;">
+                    <i class="fas fa-info-circle" style="color: #6a5acd;"></i>
+                    <span class="tooltiptext">Ingresa la URL a la que quieres redirigir a los usuarios</span>
+                </div>
+            </div>
+            
+            <button type="submit" id="generateBtn">
+                <i class="fas fa-magic"></i> Generar Enlace
+            </button>
+        </form>
+        
+        <div class="result" id="resultContainer">
+            <div class="result-title">
+                <i class="fas fa-link"></i> Tu enlace seguro:
+            </div>
+            <div class="result-link-container">
+                <div class="result-link" id="generatedLink"></div>
+                <button class="copy-btn" id="copyBtn">
+                    <i class="far fa-copy"></i> Copiar
+                </button>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Seguro</h3>
+                <p>Protege tus enlaces de bloqueos</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Rápido</h3>
+                <p>Genera enlaces en segundos</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Responsivo</h3>
+                <p>Funciona en todos los dispositivos</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-user-secret"></i>
+                <h3>Privado</h3>
+                <p>No almacenamos tus datos</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 Generador de Enlaces Seguros | <a href="#" id="termsLink">Términos y Condiciones</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('linkForm');
+            const resultContainer = document.getElementById('resultContainer');
+            const generatedLink = document.getElementById('generatedLink');
+            const copyBtn = document.getElementById('copyBtn');
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            const successAlert = document.getElementById('successAlert');
+            const generateBtn = document.getElementById('generateBtn');
+            const termsLink = document.getElementById('termsLink');
+            
+            // Mostrar términos y condiciones
+            termsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Términos y Condiciones:\n\n1. Este servicio es gratuito.\n2. No nos hacemos responsables del contenido compartido.\n3. El uso indebido puede resultar en la suspensión del servicio.');
+            });
+            
+            // Validar URLs antes de enviar
+            function isValidUrl(url) {
+                try {
+                    new URL(url);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const videoUrl = document.getElementById('videoUrl').value;
+                const redirectUrl = document.getElementById('redirectUrl').value;
+                
+                // Validar URLs
+                if (!isValidUrl(videoUrl) || !isValidUrl(redirectUrl)) {
+                    showError('Por favor, ingresa URLs válidas (deben comenzar con http:// o https://)');
+                    return;
+                }
+                
+                // Simular procesamiento
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+                
+                // Simular delay de red
+                setTimeout(function() {
+                    // Generar enlace "seguro" (esto es solo un ejemplo)
+                    const safeLink = `https://seguro.ejemplo.com/link?vid=${btoa(videoUrl)}&redir=${btoa(redirectUrl)}`;
+                    
+                    // Mostrar resultado
+                    generatedLink.textContent = safeLink;
+                    resultContainer.style.display = 'block';
+                    successAlert.style.display = 'flex';
+                    errorAlert.style.display = 'none';
+                    
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generar Enlace';
+                    
+                    // Desplazarse al resultado
+                    resultContainer.scrollIntoView({ behavior: 'smooth' });
+                }, 1500);
+            });
+            
+            // Copiar al portapapeles
+            copyBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(generatedLink.textContent).then(function() {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    
+                    setTimeout(function() {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                }).catch(function() {
+                    showError('No se pudo copiar el enlace. Por favor, cópialo manualmente.');
+                });
+            });
+            
+            // Mostrar mensaje de error
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorAlert.style.display = 'flex';
+                successAlert.style.display = 'none';
+                
+                // Desplazarse al error
+                errorAlert.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Efecto de máquina de escribir para el título
+            const title = document.querySelector('h1');
+            const originalTitle = title.textContent;
+            title.textContent = '';
+            
+            let i = 0;
+            const typingEffect = setInterval(function() {
+                if (i < originalTitle.length) {
+                    title.textContent += originalTitle.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typingEffect);
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>
